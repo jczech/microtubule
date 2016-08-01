@@ -55,17 +55,19 @@ def makeMicrotubuleStrand(zBottom=0.0,nBeads=26,isAlphaAtStart=True, axis='z'):
     beta_faces = []
 
     alpha_mesh = bpy.data.meshes.new(name="AlphaVerts")
+    alpha_mesh.name = "AlphaVerts"
     alpha_mesh.from_pydata(alpha_verts, alpha_edges, alpha_faces)
     
     beta_mesh = bpy.data.meshes.new(name="BetaVerts")
     beta_mesh.name = "BetaVerts"
     beta_mesh.from_pydata(beta_verts, beta_edges, beta_faces)
-    # useful for development when the mesh may be invalid.
-    # mesh.validate(verbose=True)
+
     alpha_obj = object_data_add(bpy.context, alpha_mesh)
     beta_obj = object_data_add(bpy.context, beta_mesh)
 
 def makeMicrotubule(zBottom,length,axis):
+    
+    bpy.context.scene.cursor_location = (0, 0, 0)
     
     nBeads=round(length/dz)
     makeMicrotubuleStrand(zBottom=zBottom,nBeads=nBeads,isAlphaAtStart=True, axis=axis)
@@ -89,21 +91,21 @@ def makeMicrotubule(zBottom,length,axis):
     
     bpy.ops.object.select_all(action='DESELECT')
     objects["AlphaVerts"].select = True
-    bpy.context.scene.cursor_location = (Rm, 0, zBottom)
+    bpy.context.scene.cursor_location = (zBottom+D, Rm, 0)
     bpy.ops.object.origin_set(type='ORIGIN_CURSOR')
     
     bpy.ops.object.select_all(action='DESELECT')
     objects["BetaVerts"].select = True
-    bpy.context.scene.cursor_location = (Rm, 0, zBottom+D)
+    bpy.context.scene.cursor_location = (zBottom, Rm, 0)
     bpy.ops.object.origin_set(type='ORIGIN_CURSOR')
-    
-    bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=3, size=D/2, enter_editmode=True, location=(Rm, 0, zBottom))
+  
+    bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=3, size=D/2, enter_editmode=True, location=(zBottom+D, Rm, 0))
     bpy.ops.mesh.faces_shade_smooth()
     bpy.ops.object.editmode_toggle()
     bpy.context.object.data.materials.append(mat_alpha)
     bpy.data.objects["Icosphere"].name = "AlphaUnit"
     
-    bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=3, size=D/2, enter_editmode=True, location=(Rm, 0, zBottom+D))
+    bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=3, size=D/2, enter_editmode=True, location=(zBottom, Rm, 0))
     bpy.ops.mesh.faces_shade_smooth()
     bpy.ops.object.editmode_toggle()
     bpy.context.object.data.materials.append(mat_beta)
